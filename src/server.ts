@@ -47,10 +47,13 @@ const initDb = async () => {
 
 initDb();
 
+
+
 app.get("/", (req: Request, res: Response) => {
   res.send("Hello sadman!");
 });
 
+//users CRUD
 app.post("/users", async (req: Request, res: Response) => {
   const { name, email } = req.body;
 
@@ -69,14 +72,33 @@ app.post("/users", async (req: Request, res: Response) => {
   } catch (error: any) {
     res.status(500).json({
       success: false,
-      message: error.details,
+      message: error.message,
     });
   }
 
-  res.status(201).json({
-    success: true,
-    message: "API is working",
-  });
+});
+
+app.get("/users", async (req:Request, res:Response)=>{
+
+  try {
+    const usersData = await pool.query(`
+      SELECT * FROM users
+    `);
+
+    res.status(201).json({
+      success : true,
+      message: "Data fetched successfully",
+      data: usersData.rows
+    })
+    
+  } catch (error: any) {
+    res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+    
+  }
+  
 });
 
 app.listen(port, () => {
