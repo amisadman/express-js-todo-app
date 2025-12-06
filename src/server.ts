@@ -126,6 +126,71 @@ app.get("/users/:id", async (req: Request, res: Response) => {
   }
 });
 
+app.put("/users/:id", async (req: Request, res: Response) => {
+  const id = req.params.id;
+  console.log(id);
+
+  try {
+    const user = await pool.query(
+      `
+      UPDATE users SET name=$1, email=$2 WHERE id=$3 RETURNING *
+    `,
+      [req.body.name,req.body.email,req.params.id]
+    );
+
+    if (user.rows.length === 0) {
+      res.status(404).json({
+        success: false,
+        message: "Data not found",
+      });
+    } else {
+      res.status(201).json({
+        success: true,
+        message: "Data updated successfully",
+        data: user.rows,
+      });
+    }
+  } catch (error: any) {
+    res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+});
+
+app.delete("/users/:id", async (req: Request, res: Response) => {
+  const id = req.params.id;
+  console.log(id);
+
+  try {
+    const user = await pool.query(
+      `
+      DELETE FROM users WHERE id=$1
+    `,
+      [req.params.id]
+    );
+
+    if (user.rowCount === 0) {
+      res.status(404).json({
+        success: false,
+        message: "Data not found",
+      });
+    } else {
+      res.status(201).json({
+        success: true,
+        message: "Data Deleted successfully",
+        data: user.rows,
+      });
+    }
+  } catch (error: any) {
+    res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+});
+
+
 app.listen(port, () => {
   console.log(`Example app listening on port ${port}`);
 });
