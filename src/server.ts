@@ -341,7 +341,7 @@ app.delete("/todos/:id", logger, async (req: Request, res: Response) => {
   }
 });
 
-app.use((req: Request, res: Response) => {
+app.use(logger,(req: Request, res: Response) => {
   res.status(404).json({
     success: false,
     message: "Route not found",
