@@ -230,6 +230,26 @@ app.get("/todos", async (req: Request, res: Response) => {
     });
   }
 });
+app.get("/todos/:id", async (req: Request, res: Response) => {
+  console.log(req.params.id);
+  try {
+    const todoData = await pool.query(`
+      SELECT * FROM todos WHERE id=$1
+    `,[req.params.id]);
+
+    res.status(201).json({
+      success: true,
+      message: "Data fetched successfully",
+      data: todoData.rows,
+    });
+  } catch (error: any) {
+    res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+});
+
 
 app.listen(port, () => {
   console.log(`Example app listening on port ${port}`);
